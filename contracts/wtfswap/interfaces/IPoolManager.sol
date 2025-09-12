@@ -3,7 +3,7 @@ pragma solidity ^0.8.24;
 pragma abicoder v2;
 import "./IFactory.sol";
 
-interface IpoolManager is IFactory {
+interface IPoolManager is IFactory {
     //交易池
     struct PoolInfo{
         address token0;

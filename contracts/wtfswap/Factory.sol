@@ -1,27 +1,48 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 pragma solidity ^0.8.24;
+
 import "./interfaces/IFactory.sol";
 
-abstract contract Factory is IFactory {
-    address public override poolManager;
-    address public override positionManager;
-    address public override swapRouter;
-    address public override owner;
+contract Factory is IFactory {
+    mapping(address => mapping(address => address[])) public pools;
 
-    modifier onlyOwner(){
-        require(msg.sender == owner,"FORBIDDEN");
-        _;
+    // parameters 是用于 Pool 创建时回调获取参数用
+    // 不是用构造函数是为了避免构造函数变化，那样会导致 Pool 合约地址不能按照参数计算出来
+    // 具体参考 https://docs.openzeppelin.com/cli/2.8/deploying-with-create2
+    // new_address = hash(0xFF, sender, salt, bytecode)
+    function parameters()
+        external
+        view
+        override
+        returns (
+            address factory,
+            address token0,
+            address token1,
+            int24 tickLower,
+            int24 tickUpper,
+            uint24 fee
+        )
+    {}
+
+    function getPool(
+        address token0,
+        address token1,
+        uint32 index
+    ) external view override returns (address) {
+        return pools[token0][token1][index];
     }
-    constructor(){
-        owner = msg.sender;
-    }
-    function setPoolManager(address _poolManager) external onlyOwner{
-        poolManager = _poolManager;
-    }
-    function setPositionManager(address _positionManager) external onlyOwner{
-        positionManager = _positionManager;
-    }
-    function setSwapRouter(address _swapRouter) external onlyOwner{
-        swapRouter = _swapRouter;
+
+    function createPool(
+        address token0,
+        address token1,
+        int24 tickLower,
+        int24 tickUpper,
+        uint24 fee
+    ) external override returns (address pool) {
+        // 先调用 getPools 获取当前 token0 token1 的所有 pool
+        // 然后判断是否已经存在 tickLower tickUpper fee 相同的 pool
+        // 如果存在就直接返回
+        // 如果不存在就创建一个新的 pool
+        // 然后记录到 pools 中
     }
 }

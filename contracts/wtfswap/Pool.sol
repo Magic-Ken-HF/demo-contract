@@ -3,7 +3,7 @@ pragma solidity ^0.8.24;
 import "./interfaces/IPool.sol";
 import "./interfaces/IFactory.sol";
 
-contract Pool is IPool{} {
+contract Pool is IPool {
     /// @inheritdoc IPool
     address public immutable override factory;
     /// @inheritdoc IPool
@@ -25,7 +25,7 @@ contract Pool is IPool{} {
     uint128 public override liquidity;
 
     // 用一个 mapping 来存放所有 Position 的信息
-    mapping (address => Position) public position;
+    mapping(address=>Position) public positions;
 
     constructor(){
         // constructor 中初始化 immutable 的常量。
@@ -42,12 +42,41 @@ contract Pool is IPool{} {
     function initialize(uint160 sqrtPriceX96_) external override{
         sqrtPriceX96 = sqrtPriceX96_;
     }
+    //添加流动性
     function mint(
         address recipient,
         uint256 amount,
         bytes calldata data
         ) external override returns (uint256 amount0,uint256 amount1){
-            
+            // 基于 amount 计算出当前需要多少 amount0 和 amount1
+        // TODO 当前先写个假的
+        (amount0,amount1)=(amount/2,amount/2);
+        // 把流动性记录到对应的 position 中
+        position[recipient].liquidity+=amount;
+        IMintCallback(recipient).mintCallback(amount0,amount1,data);
 
     }
+    function collect(
+        address recipient
+        ) external override returns(uint128 amount0,uint128 amount1){
+            //获取当前用户的position
+            Position storage position=positions[recipient];
+            position.tokensOwed0+=amount0;
+            position.tokensOwed1+=amount1;
+
+    }
+    //移除流动性
+    function burn(
+        uint128 amount
+        ) external override returns(uint256 amount0,uint256 amount1){
+
+    }
+    //交易
+    function swap(
+        address recipient,
+        bool zeroForOne,
+        int256 amountSpecified,
+        uint160 sqrtPriceLimitX96,
+        bytes calldata data
+    ) external override returns (int256 amount0, int256 amount1) {}
 }

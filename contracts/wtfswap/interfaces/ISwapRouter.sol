@@ -39,7 +39,7 @@ interface ISwapRouter is ISwapCallback{
         ExactOutputParams calldata params
     ) external payable returns (uint256 amountIn);
 
-    struct QuoteExactInpuParams{
+    struct QuoteExactInputParams{
         address tokenIn;
         address tokenOut;
         uint32[] indexPath;
@@ -47,7 +47,7 @@ interface ISwapRouter is ISwapCallback{
         uint160 sqrtPriceLimitX96;
     }
     function quoteExactInput(
-        QuoteExactInpuParams memory params
+        QuoteExactInputParams memory params
     ) external returns(uint256 amountOut);
     struct QuoteExactOutputParams{
         address tokenIn;
@@ -57,6 +57,6 @@ interface ISwapRouter is ISwapCallback{
         uint160 sqrtPriceLimitX96;
     }
     function quoteExactOutput(
-        QuoteExactOutputParams memory params
+        QuoteExactInputParams memory params
     ) external returns(uint256 amountIn) ;
 }

@@ -47,6 +47,7 @@ interface IPool{
         uint256 amount0,
         uint256 amount1
     );
+    //添加流动性
     function mint(
         address recipient,
         uint128 amount,
@@ -71,6 +72,7 @@ interface IPool{
         uint128 amount0,
         uint128 amount1
     );
+    //移除流动性
     function burn(
         uint128 amount
     ) external returns (uint256 amount0,uint256 amount1);
